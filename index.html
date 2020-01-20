@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - effects - anaglyph</title>
+		<meta charset="utf-8">
+		<!-- <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"> -->
+        <link type="text/css" rel="stylesheet" href="main.css">
+        <script src = "https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+        <script src = "https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+        <title>Cube with bubbles</title>
+        <!-- <script src = "AnaglyphEffect.js"></script> -->
+	</head>
+	<body>
+		<script>
+
+			var container, camera, scene, renderer, gui, group;
+            var spheres = [];
+            var cubesize = 10.6;
+
+			var mouseX = 0;
+            var mouseY = 0;
+            
+            var sphere_number = 1000;
+
+            var light, ambient, spotLight;
+
+            var meshBox;
+			var windowHalfX = window.innerWidth / 2;
+            var windowHalfY = window.innerHeight / 2;
+
+			document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+            init();
+            dispaygui();
+			animate();
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+                //CAMERA
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
+				camera.position.z = 20;
+                
+				scene = new THREE.Scene();
+				//scene.background = textureCube;
+
+                group = new THREE.Group();
+
+                //Spheres
+				var geometry = new THREE.SphereGeometry( 0.1, 32, 16 );
+				var material = new THREE.MeshLambertMaterial( { color: 0x738191}); //, envMap: textureCube } );
+				for ( var i = 0; i < sphere_number; i ++ ) {
+
+					var mesh = new THREE.Mesh( geometry, material );
+
+					mesh.position.x = Math.random() * 10 - 5; //?
+					mesh.position.y = Math.random() * 10 - 5;
+					mesh.position.z = Math.random() * 10 - 5;
+
+					mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1; //?
+
+                    
+                    //scene.add( mesh );
+                    group.add(mesh);
+					spheres.push( mesh );
+                }
+                
+                //CUBE
+                var geometryBox = new THREE.BoxGeometry(cubesize, cubesize, cubesize);
+                var materialBox = new THREE.MeshPhongMaterial({ color: 0xc3dbf7, opacity: 0.5, transparent: true });
+                meshBox = new THREE.Mesh(geometryBox, materialBox);
+                meshBox.name = 'cube';
+                group.add(meshBox);
+                scene.add(group);
+
+
+                group.position.y+=10;
+
+                var geoFloor = new THREE.BoxBufferGeometry( 2000, 0.1, 2000 );
+				var matStdFloor = new THREE.MeshStandardMaterial( { color: 0x6ecadc, roughness: 0, metalness: 0 } );
+				var mshStdFloor = new THREE.Mesh( geoFloor, matStdFloor );
+				scene.add( mshStdFloor );
+
+                //LIGHT
+
+
+                light = new THREE.PointLight(0xFFFFFF, 1, 500);
+                light.position.set(10, 0, 25);
+                scene.add(light);
+
+                ambient = new THREE.AmbientLight( 0xffffff, 0.1 );
+                scene.add( ambient );
+                
+                var spotLight1 = createSpotlight( 0xFF7F00 );
+			    var spotLight2 = createSpotlight( 0x00FF7F );
+                var spotLight3 = createSpotlight( 0x7F00FF );
+                
+                scene.add(spotLight1);
+                scene.add(spotLight2);
+                scene.add(spotLight3);
+
+                //light = new THREE.HemisphereLight( 0xFFFFFF, 0x080820, 0.7 );
+                //light = new THREE.PointLight(0xFFFFFF, 1, 200); //noc dzień zmiany
+                //light.position.set(10, 0, 25);
+                //scene.add(light);
+
+
+                //RENDERER
+                renderer = new THREE.WebGLRenderer();
+                //renderer.setClearColor(0xb6d5db, 1.0);
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                
+                //renderer.setPixelRatio( window.devicePixelRatio ); //?
+				container.appendChild( renderer.domElement );
+				window.addEventListener( 'resize', onWindowResize, false );
+            }
+            
+            function dispaygui()
+            {
+
+                var options = {
+                    fog : false,
+                    dayTime: ambient.intensity,
+                    night: false,
+                    camera: {
+                        type: ""
+                    },
+                    shading:{
+                        type:""
+                    }
+                    
+                };
+
+                var gui = new dat.GUI();
+
+                var cam = gui.addFolder('Camera');
+                cam.add(options.camera, 'type', ["Scene", "moving object (stationary)", "moving object (moving)"]).name("Type");
+                cam.open();
+
+                var shad = gui.addFolder('Shading');
+                shad.add(options.shading, 'type', ["Constant shading", "Gouraud shading", "Phong shading"]).name("Type");
+                shad.open();
+
+                gui.add( options, 'dayTime', 0.0, 0.6 ).step( 0.01 ).onChange( function ( val ) {
+
+                    ambient.intensity = val;
+                    light.intensity = val + 0.1;
+                } );
+
+                gui.add(options, 'fog').name("Fog");
+                }
+
+			function onWindowResize() {
+
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                
+			}
+
+			function onDocumentMouseMove( event ) {
+
+				mouseX = ( event.clientX - windowHalfX ) / 100;
+                mouseY = ( event.clientY - windowHalfY ) / 100;
+                
+            }
+            
+            function createSpotlight( color ) {
+
+                var newObj = new THREE.SpotLight( color, 2 );
+
+                newObj.position.set( 15, 40, 35 );
+				newObj.angle = Math.PI / 4;
+				newObj.penumbra = 0.05;
+				newObj.decay = 2;
+                newObj.distance = 100;
+                
+                //newObj.castShadow = true;
+                // newObj.penumbra = 0.2;
+                // newObj.decay = 2;
+                // newObj.distance = 30;
+
+                return newObj;
+            }
+
+			function animate() {
+
+                requestAnimationFrame( animate );
+                
+				render();
+			}
+
+			function render() {
+
+				var timer = 0.0001 * Date.now();
+
+				camera.position.x += ( mouseX - camera.position.x ) * .05;
+                camera.position.y += ( - mouseY - camera.position.y ) * .05;
+                
+                
+
+				camera.lookAt( group.position );
+
+				for ( var i = 0, il = spheres.length; i < il; i ++ ) {
+
+					var sphere = spheres[ i ];
+
+					sphere.position.x = 5 * Math.cos( timer + i );
+					sphere.position.y = 5 * Math.sin( timer + i * 1.1 );
+
+                }
+
+                group.rotation.x += 0.001;
+                group.rotation.y +=0.001;
+                group.rotation.z +=0.001;
+                
+                renderer.render(scene, camera);
+			}
+
+		</script>
+
+	</body>
+</html>
+
