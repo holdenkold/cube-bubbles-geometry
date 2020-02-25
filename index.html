@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>three.js webgl - effects - anaglyph</title>
+    <title>three.js geometry</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link type="text/css" rel="stylesheet" href="main.css">
@@ -10,7 +10,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
     <script src="lib.js"></script>
-    <title>Cube with bubbles</title>
 </head>
 
 <body>
@@ -18,7 +17,7 @@
         function main() {
             const gui = new dat.GUI();
             var focus = 'group';
-            var container, camera, scene, renderer, group, cam_focus;
+            var container, camera, scene, renderer, group;
             var spheres = [];
             var balls = [];
             var spotLights = [];
@@ -45,19 +44,16 @@
             window.addEventListener('resize', onWindowResize, false);
 
             init();
-            //dispaygui();
             animate();
 
             function init() {
                 container = document.createElement('div');
                 document.body.appendChild(container);
 
-                //CAMERA
                 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 1000);
                 camera.position.z = 30;
 
                 scene = new THREE.Scene();
-
                 {
                     const near = 0.015;
                     const far = 50;
@@ -72,47 +68,26 @@
                     fog.addColor(fogGUIHelper, 'color');
                 }
 
-
-                // SHAPES
                 group = new THREE.Group();
 
-                // SPHERES
-
-
-
-                // var geometry = new THREE.SphereGeometry(0.1, 32, 16);
-                // var material = new THREE.MeshLambertMaterial({ color: 0x738191 });
-                // for (var i = 0; i < sphere_number; i++) {
-                //     var mesh = new THREE.Mesh(geometry, material);
-
-                //     mesh.position.x = Math.random() * 10 - 5;
-                //     mesh.position.y = Math.random() * 10 - 5;
-                //     mesh.position.z = Math.random() * 10 - 5;
-
-                //     mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1;
-
-                //     group.add(mesh);
-                //     spheres.push(mesh);
-                // }
-
-                var geom = new THREE.SphereGeometry(0.8, 32, 16);  // Geometry will be reused for all the balls.
+                // BALLS
+                var geom = new THREE.SphereGeometry(0.8, 32, 16);  
                 for (var i = 0; i < balls_count; i++) {
-                    var ball = {};  // object will contain a sphere plus its position and velocity info
+                    var ball = {};  
                     balls.push(ball);
 
                     ball.obj = new THREE.Mesh(
                         geom,
                         new THREE.MeshPhongMaterial({
-                            color: Math.floor(Math.random() * 0x1000000), // random color
+                            color: Math.floor(Math.random() * 0x1000000),
                             specular: 0x080808,
                             shininess: 32
                         })
                     );
-
-                    ball.x = 18 * Math.random() - 9;   // set random ball position
+                    ball.x = 18 * Math.random() - 9;   
                     ball.y = 18 * Math.random() - 9;
                     ball.z = 18 * Math.random() - 9;
-                    ball.dx = Math.random() * 6 + 2;  // set random ball velocity, in units per second
+                    ball.dx = Math.random() * 6 + 2;  
                     ball.dy = Math.random() * 6 + 2;
                     ball.dz = Math.random() * 6 + 2;
                     if (Math.random() < 0.5)
@@ -126,7 +101,7 @@
                     group.add(ball.obj);
                 }
 
-                //CUBE
+                // CUBE
                 var geometryBox = new THREE.BoxGeometry(cubesize, cubesize, cubesize);
 
                 var materialPhongBox = new THREE.MeshPhongMaterial({ color: 0xc3dbf7, opacity: 0.5, transparent: true });
@@ -144,7 +119,7 @@
                 group.position.y += 8;
                 scene.add(group);
 
-                //LIGHT
+                // LIGHTS
                 light = new THREE.PointLight(0xFFFFFF, 1, 500);
                 light.position.set(10, 0, 25);
                 group.add(light);
@@ -170,18 +145,15 @@
                 light4.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ color: 0xffaa00 })));
                 group.add(light4);
 
-
-                //RENDERER
+                // RENDER
                 renderer = new THREE.WebGLRenderer();
-                //renderer.setClearColor(0xb6d5db, 1.0);
                 renderer.setSize(window.innerWidth, window.innerHeight);
-
-                //renderer.setPixelRatio( window.devicePixelRatio ); //?
                 container.appendChild(renderer.domElement);
 
                 var controls = new THREE.OrbitControls(camera, renderer.domElement);
                 window.addEventListener('resize', onWindowResize, false);
 
+                // GUI
                 var options = {
                     fog: false,
                     dayTime: ambient.intensity,
@@ -192,15 +164,14 @@
                     shading: {
                         type: ""
                     }
-
                 };
 
                 var cam = gui.addFolder('Camera');
-                cam.add(options.camera, 'type', ["moving object (stationary)", "Scene", "moving object (moving)"]).name("Type").onChange(function (options) {
+                cam.add(options.camera, 'type', ["moving object", "Scene"]).name("Type").onChange(function (options) {
                     if (options == 'Scene') {
                         focus = 'scene';
                     }
-                    else if (options == 'moving object (stationary)') {
+                    else if (options == 'moving object') {
                         focus = 'group';
                     }
                 });
@@ -238,7 +209,7 @@
                 render();
             }
 
-            // EVENTS:
+            // EVENTS
             function onWindowResize() {
                 windowHalfX = window.innerWidth / 2;
                 windowHalfY = window.innerHeight / 2;
@@ -248,12 +219,6 @@
                 renderer.setSize(window.innerWidth, window.innerHeight);
             }
 
-            function onDocumentMouseMove(event) {
-                mouseX = (event.clientX - windowHalfX) / 100;
-                mouseY = (event.clientY - windowHalfY) / 100;
-            }
-
-            // This function uses mac os key codes, may not work on other platdforms.
             function onDocumentKeyDown(event) {
                 var keyCode = event.code;
                 if (keyCode == 'ArrowUp') {
@@ -274,12 +239,10 @@
                 for (var i = 0; i < balls.length; i++) {
                     var ball = balls[i];
 
-                    /* update ball position based on ball velocity and elapsed time */
                     ball.x += ball.dx * dt;
                     ball.y += ball.dy * dt;
                     ball.z += ball.dz * dt;
-
-                    /* if ball has moved outside the cube, reflect it back into the cube */
+        
                     if (ball.x > 9) {
                         ball.x -= 2 * (ball.x - 9);
                         ball.dx = -Math.abs(ball.dx);
@@ -304,51 +267,19 @@
                         ball.z += 2 * (-9 - ball.z);
                         ball.dz = Math.abs(ball.dz);
                     }
-
                     ball.obj.position.set(ball.x, ball.y, ball.z);
                 }
-            }
-
-            function createSpotlight(color) {
-                var newObj = new THREE.SpotLight(color, 2);
-
-                newObj.position.set(15, 40, 35);
-                newObj.angle = Math.PI / 4;
-                newObj.penumbra = 0.05;
-                newObj.decay = 2;
-                newObj.distance = 100;
-
-                //newObj.castShadow = true;
-                // newObj.penumbra = 0.2;
-                // newObj.decay = 2;
-                // newObj.distance = 30;
-
-                return newObj;
             }
 
             function render() {
                 var timer = 0.0001 * Date.now();
                 var time = Date.now() * 0.0005;
-
-                // camera.position.x += (mouseX - camera.position.x) * .05;
-                // camera.position.y += (- mouseY - camera.position.y) * .05;
-
-                //camera.lookAt(group.position);
                 if (focus == 'group') {
                     camera.lookAt(group.position);
                 }
                 else {
                     camera.lookAt(scene.position);
                 }
-
-                // for (var i = 0, il = spheres.length; i < il; i++) {
-
-                //     var sphere = spheres[i];
-
-                //     sphere.position.x = 5 * Math.cos(timer + i);
-                //     sphere.position.y = 5 * Math.sin(timer + i * 1.1);
-
-                // }
 
                 group.rotation.x += 0.001;
                 group.rotation.y += 0.001;
@@ -373,7 +304,6 @@
                 renderer.render(scene, camera);
             }
         }
-
         main()
     </script>
 </body>
