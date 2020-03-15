@@ -1,4 +1,4 @@
-# 3D gemetry in THREE.js 
+# 3D geometry animation in THREE.js 
 Simple 3D gemetry with rotating balls inside rotating cube and whirling lights in THREE.js.
 
 ![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/animation.gif)
@@ -13,7 +13,7 @@ Simple 3D gemetry with rotating balls inside rotating cube and whirling lights i
   3. Constant shading
 * Day-Night change mode
 * Fog mode
-* Light disappearing with distance
+* Disappearance of light with distance
 
 ![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/img3.png)
 
