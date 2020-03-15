@@ -16,21 +16,12 @@ Simple 3D gemetry with rotating balls inside rotating cube and whirling lights i
 * Light disappearing with distance
 
 ![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/img3.png)
-![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/img4.png)
-![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/img5.png)
-![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/img6.png)
 
-Fog 
-:-------------------------:|:-------------------------:
-![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/img1.png) | 
-![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/img2.png)
+![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/img5.png)
+
+*Fog mode*
+![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/fog1.png)
 
 Night mode | Day Mode
 :-------------------------:|:-------------------------:
-![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/night.png) | 
-![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/day.png)
-
-
- 
-
-
+![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/night.png) | ![](https://github.com/holdenkold/cube-bubbles-geometry/blob/master/img/day.png)
